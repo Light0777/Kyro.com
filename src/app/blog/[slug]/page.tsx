@@ -8,6 +8,7 @@ import { signOgImageUrl } from "@/lib/og-image";
 import { wisp } from "@/lib/wisp";
 import { notFound } from "next/navigation";
 import type { BlogPosting, WithContext } from "schema-dts";
+import AdUnit from "../../components/AdUnit";
 
 export async function generateMetadata(props: { params: Promise<Params> }) {
   const params = await props.params;
@@ -76,7 +77,19 @@ const Page = async (props: { params: Promise<Params> }) => {
         <Navbar />
         <div className="max-w-prose mx-auto text-xl mt-0 sm:-mt-20">
           <BlogPostContent post={result.post} />
+          
+          {/* Ad after blog content */}
+          <div className="my-8">
+            <AdUnit slot="YOUR_POST_CONTENT_AD_SLOT" format="horizontal" />
+          </div>
+          
           <RelatedPosts posts={posts} />
+          
+          {/* Ad before comments */}
+          <div className="my-8">
+            <AdUnit slot="YOUR_POST_COMMENTS_AD_SLOT" format="horizontal" />
+          </div>
+          
           <CommentSection slug={params.slug} />
         </div>
         <Footer />
