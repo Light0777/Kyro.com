@@ -7,6 +7,7 @@ import Navbar from "../navbar";
 import AdUnit from "../components/AdUnit";
 import { formatDate } from "date-fns";
 import PostMeta from "../components/PostMeta";
+import Image from "next/image";
 
 const Page = async (
   props: {
@@ -27,10 +28,12 @@ const Page = async (
           <div key={post.id} className="overflow-hidden">
             {post.image && (
               <div className="relative h-auto w-full">
-                <img 
+                <Image 
                   src={post.image} 
                   alt={post.title}
                   className="w-full h-full rounded-xl object-cover cursor-pointer"
+                  width={600}
+                  height={400}
                 />
               </div>
             )}

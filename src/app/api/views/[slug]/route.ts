@@ -1,16 +1,16 @@
 import { Redis } from '@upstash/redis';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Initialize Redis
 const redis = Redis.fromEnv();
 
 // POST - Record a view
 export async function POST(
-  request: Request,
-  { params }: { params: { slug: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const slug = params.slug;
+    const { slug } = await params;
     
     if (!slug) {
       return NextResponse.json({ error: 'Slug required' }, { status: 400 });
@@ -45,11 +45,11 @@ export async function POST(
 
 // GET - Fetch view count without recording
 export async function GET(
-  request: Request,
-  { params }: { params: { slug: string } }
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const slug = params.slug;
+    const { slug } = await params;
     const views = await redis.get(`views:${slug}`);
     return NextResponse.json({ views: views || 0 });
   } catch (error) {
