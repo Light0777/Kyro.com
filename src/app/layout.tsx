@@ -7,7 +7,7 @@ import Navbar from "./navbar";
 import "./globals.css";
 
 // Primary font for body text and UI
-const fontSans = Inter({ 
+const fontSans = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
@@ -16,7 +16,7 @@ const fontSans = Inter({
 });
 
 // Decorative script font for special elements
-const fontScript = Style_Script({ 
+const fontScript = Style_Script({
   subsets: ["latin"],
   variable: "--font-script",
   display: "swap",
@@ -25,14 +25,14 @@ const fontScript = Style_Script({
 
 export const metadata: Metadata = {
   title: {
-    default: "Kyro | Stories, Ideas & Curiosity in One Place",
-    template: "%s | Kyro",
+    default: process.env.NEXT_PUBLIC_BLOG_DISPLAY_NAME || "iknowtechworld",
+    template: "%s | iknowtechworld",
   },
-  description: "Kyro is where thoughts turn into stories and ideas find a voice. Explore blogs on technology, creativity, and life's random wonders.",
-  keywords: ["blog", "stories", "ideas", "curiosity", "technology", "creativity", "writing", "Kyro"],
-  authors: [{ name: "Kyro Team" }],
-  creator: "Kyro",
-  publisher: "Kyro Media",
+  description: "iknowtechworld is where thoughts turn into stories and ideas find a voice. Explore blogs on technology, creativity, and life's random wonders.",
+  keywords: ["blog", "stories", "ideas", "curiosity", "technology", "creativity", "writing", "iknowtechworld"],
+  authors: [{ name: "iknowtechworld Team" }],
+  creator: "iknowtechworld",
+  publisher: "iknowtechworld Media",
   robots: {
     index: true,
     follow: true,
@@ -45,10 +45,10 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Kyro | Stories, Ideas & Curiosity in One Place",
-    description: "Kyro is where thoughts turn into stories and ideas find a voice. Explore blogs on technology, creativity, and life's random wonders.",
-    url: "https://kyro.com",
-    siteName: "Kyro",
+    title: "iknowtechworld | Stories, Ideas & Curiosity in One Place",
+    description: "iknowtechworld is where thoughts turn into stories and ideas find a voice. Explore blogs on technology, creativity, and life's random wonders.",
+    url: "https://iknowtechworld.com",
+    siteName: "iknowtechworld",
     locale: "en_US",
     type: "website",
     images: [
@@ -56,16 +56,16 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Kyro - Stories, Ideas & Curiosity",
+        alt: "iknowtechworld - Stories, Ideas & Curiosity",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Kyro | Stories, Ideas & Curiosity in One Place",
-    description: "Kyro is where thoughts turn into stories and ideas find a voice.",
+    title: "iknowtechworld | Stories, Ideas & Curiosity in One Place",
+    description: "iknowtechworld is where thoughts turn into stories and ideas find a voice.",
     images: ["/og-image.jpg"],
-    creator: "@kyro",
+    creator: "@iknowtechworld",
   },
   icons: {
     icon: "/favicon.ico",
