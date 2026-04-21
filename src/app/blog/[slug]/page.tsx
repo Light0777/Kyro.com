@@ -31,15 +31,8 @@ export async function generateMetadata(props: { params: Promise<Params> }) {
 
   const { title, description, image } = result.post;
   
-  // Use your existing OG image generator
-  const generatedOgImage = signOgImageUrl({ 
-    title, 
-    brand: config.blog.name,
-    label: "iknowtechworld" // optional
-  });
-  
-  // Use the post's image if available, otherwise use generated OG image
-  const ogImageUrl = image || generatedOgImage;
+  // Use custom uploaded image if available, otherwise generate one
+  const ogImageUrl = image || signOgImageUrl({ title, brand: config.blog.name });
   
   const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.iknowtechworld.online";
 
