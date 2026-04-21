@@ -4,6 +4,7 @@ import { Inter, Style_Script } from "next/font/google";
 import { Providers } from "@/app/providers";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "./navbar";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 // Primary font for body text and UI
@@ -107,6 +108,7 @@ export default function RootLayout({
           <Navbar />
           <main className="w-full mx-auto p-4">{children}</main>
           <Toaster />
+           <Analytics />
         </Providers>
       </body>
     </html>
