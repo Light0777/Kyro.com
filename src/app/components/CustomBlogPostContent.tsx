@@ -74,7 +74,7 @@ export const CustomBlogPostContent = ({
                 {hasCustomComponents && customComponents ? (
                     <ContentWithCustomComponents
                         content={content}
-                        customComponents={customComponents}
+                        customComponents={customComponents!}
                     />
                 ) : (
                     <PostContent content={content} />

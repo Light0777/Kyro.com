@@ -35,6 +35,27 @@
     --radius: 0.5rem;
   }
 
+  /* Set default background immediately to prevent flash */
+  html {
+    background-color: white;
+  }
+
+  /* If system prefers dark, set dark background immediately */
+  @media (prefers-color-scheme: dark) {
+    html {
+      background-color: black;
+    }
+  }
+
+  /* Override with saved theme if available (will be applied by JavaScript) */
+  html.dark {
+    background-color: black;
+  }
+
+  html.light {
+    background-color: white;
+  }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;

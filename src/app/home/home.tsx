@@ -5,7 +5,7 @@ import Link from 'next/link'
 const Home = () => {
     const images = [
         "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/a2233388-b592-4bd2-a13f-f48efe2246da.png/public",
-        "https://i.pinimg.com/736x/4a/a8/fb/4aa8fbbde451348c87c32d54b26f9215.jpg",
+        "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/bb12ec3b-4417-4df7-85e1-65aafa92d104.png/public",
         "https://i.pinimg.com/1200x/65/00/85/650085494b582131eccd84a51383df4f.jpg",
         "https://i.pinimg.com/736x/81/c2/d5/81c2d5db59757d2ab8f1730dc26a0165.jpg",
         "https://i.pinimg.com/1200x/cb/e3/d8/cbe3d895c41fd3023fbba1fb0579aae4.jpg",
@@ -16,7 +16,7 @@ const Home = () => {
     // Dummy trending titles with corresponding blog post slugs (replace with your actual slugs)
     const trendingTitles = [
         { title: "Decorative Pillows: 2026's Hottest Home Decor Trend (+ DIY Ideas)", slug: "decorative-pillows-trend-2026-diy" },
-        { title: "10 Tips for Better Productivity", slug: "productivity-tips-2024" },
+        { title: "Best GTA 6 Setup Under ₹24.8K", slug: "best-gta-6-setup-under-24800" },
         { title: "Understanding AI in 2024", slug: "understanding-ai-2024" },
         { title: "Creative Writing Techniques", slug: "creative-writing-techniques" },
         { title: "Digital Marketing Trends", slug: "digital-marketing-trends" },
@@ -80,6 +80,7 @@ const Home = () => {
                                         src={image}
                                         alt={`Photo ${index + 1}`}
                                         fill
+                                       sizes="(max-width: 640px) 7rem, (max-width: 768px) 8rem, (max-width: 1024px) 10rem, (max-width: 1280px) 13rem, 15rem"
                                         className="object-cover rounded-xl border-4 border-white shadow-lg transition-all duration-300 hover:-translate-y-4"
                                         style={{
                                             boxShadow: '0 20px 30px -12px rgba(0, 0, 0, 0.25)',

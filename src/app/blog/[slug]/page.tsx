@@ -16,13 +16,13 @@ import { ContentWithCustomComponents } from "@wisp-cms/react-custom-component";
 import AffiliateBanner from "../../components/AffiliateBanner";
 import { CustomBlogPostContent } from "@/app/components/CustomBlogPostContent";
 import InternalLinkBox from "../../components/InternalLinkBox";
+import Script from "next/script";
 
 export async function generateMetadata(props: { params: Promise<Params> }) {
   const params = await props.params;
-
   const { slug } = params;
-
   const result = await wisp.getPost(slug);
+  
   if (!result || !result.post) {
     return {
       title: "Blog post not found",
@@ -30,7 +30,18 @@ export async function generateMetadata(props: { params: Promise<Params> }) {
   }
 
   const { title, description, image } = result.post;
-  const generatedOgImage = signOgImageUrl({ title, brand: config.blog.name });
+  
+  // Use your existing OG image generator
+  const generatedOgImage = signOgImageUrl({ 
+    title, 
+    brand: config.blog.name,
+    label: "iknowtechworld" // optional
+  });
+  
+  // Use the post's image if available, otherwise use generated OG image
+  const ogImageUrl = image || generatedOgImage;
+  
+  const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://www.iknowtechworld.online";
 
   return {
     title,
@@ -38,17 +49,40 @@ export async function generateMetadata(props: { params: Promise<Params> }) {
     openGraph: {
       title,
       description,
-      images: image ? [image] : [generatedOgImage],
+      url: `${siteUrl}/blog/${slug}`,
+      siteName: config.blog.name,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      type: "article",
+      publishedTime: result.post.publishedAt?.toString(),
+      authors: [result.post.author?.name || "iknowtechworld Team"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+      creator: "@iknowtechworld",
+      site: "@iknowtechworld",
+    },
+    alternates: {
+      canonical: `${siteUrl}/blog/${slug}`,
     },
   };
 }
+
 interface Params {
   slug: string;
 }
 
 const Page = async (props: { params: Promise<Params> }) => {
   const params = await props.params;
-
   const { slug } = params;
 
   const result = await wisp.getPost(slug);
@@ -69,21 +103,34 @@ const Page = async (props: { params: Promise<Params> }) => {
     dateModified: updatedAt.toString(),
     author: {
       "@type": "Person",
-      name: author.name ?? undefined,
+      name: author.name ?? "iknowtechworld Team",
       image: author.image ?? undefined,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "iknowtechworld",
+      logo: {
+        "@type": "ImageObject",
+        url: `${process.env.NEXT_PUBLIC_BASE_URL || "https://www.iknowtechworld.online"}/favicon.ico`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${process.env.NEXT_PUBLIC_BASE_URL || "https://www.iknowtechworld.online"}/blog/${slug}`,
     },
   };
 
   return (
     <>
-      <script
+      <Script
+        id="blog-jsonld"
         type="application/ld+json"
+        strategy="afterInteractive"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="container mx-auto px-5">
         <Navbar />
         <div className="max-w-prose mx-auto text-xl mt-0">
-          {/* Post metadata only - title will come from BlogPostContent */}
           <div className="mb-8 sm:mb-2">
             <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
               <PostMeta publishedAt={result.post.publishedAt!} slug={result.post.slug} />
@@ -95,24 +142,22 @@ const Page = async (props: { params: Promise<Params> }) => {
                   height={16}
                   className="h-4 w-4 rounded-full"
                 />
-                {author?.name || 'Kyro Team'}
+                {author?.name || 'iknowtechworld Team'}
               </span>
             </div>
           </div>
 
-          {/* <BlogPostContent post={result.post} /> */}
           <CustomBlogPostContent
             post={result.post}
             customComponents={{ AffiliateBanner, InternalLinkBox }}
           />
-          {/* Ad after blog content */}
+          
           <div className="my-8">
             <AdUnit slot="YOUR_POST_CONTENT_AD_SLOT" format="horizontal" />
           </div>
 
           <RelatedPosts posts={posts} />
 
-          {/* Ad before comments */}
           <div className="my-8">
             <AdUnit slot="YOUR_POST_COMMENTS_AD_SLOT" format="horizontal" />
           </div>

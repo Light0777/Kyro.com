@@ -5,6 +5,7 @@ import { Providers } from "@/app/providers";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "./navbar";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 // Primary font for body text and UI
@@ -25,6 +26,7 @@ const fontScript = Style_Script({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.iknowtechworld.online"),
   title: {
     default: process.env.NEXT_PUBLIC_BLOG_DISPLAY_NAME || "iknowtechworld",
     template: "%s | iknowtechworld",
@@ -74,9 +76,6 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
-  // verification: {
-  //   google: "your-google-verification-code",
-  // },
   category: "blog",
 };
 
@@ -86,15 +85,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
-        {/* AdSense script - placed directly in head for verification */}
+        {/* CRITICAL: Regular script tag - NOT React Script component */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const saved = localStorage.getItem('theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = saved || (prefersDark ? 'dark' : 'light');
+                if (theme === 'dark') {
+                  document.documentElement.classList.add('dark');
+                }
+              } catch(e) {}
+            `,
+          }}
+        />
+        
+        {/* AdSense script */}
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9635487371462309"
           crossOrigin="anonymous"
         />
-        {/* Meta tag verification (alternative method) */}
+        
+        {/* Meta tag verification */}
         <meta name="google-adsense-account" content="ca-pub-9635487371462309" />
       </head>
       <body
@@ -108,7 +124,8 @@ export default function RootLayout({
           <Navbar />
           <main className="w-full mx-auto p-4">{children}</main>
           <Toaster />
-           <Analytics />
+          <Analytics />
+          <SpeedInsights />
         </Providers>
       </body>
     </html>

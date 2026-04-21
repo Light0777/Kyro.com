@@ -17,34 +17,37 @@ export default function InternalLinkBox({
   slug
 }: InternalLinkBoxProps) {
   return (
-    <div className="my-6 border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-950/20 rounded-r-xl p-4 not-prose">
-      <div className="flex items-start gap-3">
+    <div className="my-6 border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-950/20 rounded-r-xl p-3 sm:p-5 not-prose">
+      <div className="flex justify-center items-center gap-5">
         {imageUrl && (
-          <div className="relative w-12 h-12 flex-shrink-0 mt-1">
+          <div className="relative w-[5rem] h-[5rem] md:w-[7rem] md:h-[7rem] -mt-[2rem]">
             <Image
               src={imageUrl}
               alt={title}
               fill
-              className="object-cover rounded-md"
+              sizes='auto'
+              className="object-cover rounded-lg"
             />
           </div>
         )}
-        <div className="flex-1">
-          <div className="text-xs text-purple-600 dark:text-purple-400 mb-1">You Might Also Like</div>
+        <div className="flex-1 min-w-0">
+          <div className="text-xs text-purple-600 dark:text-purple-400 mb-0.5 font-medium">
+            Recommended
+          </div>
           <Link 
             href={`/blog/${slug}`}
-            className="font-semibold text-black dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition"
+            className="font-semibold text-black dark:text-white hover:text-purple-600 dark:hover:text-purple-400 transition text-sm sm:text-base line-clamp-2"
           >
             {title}
           </Link>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+          <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mt-1 line-clamp-2">
             {description}
           </p>
           <Link 
             href={`/blog/${slug}`}
-            className="inline-block mt-2 text-sm text-purple-600 dark:text-purple-400 hover:underline"
+            className="inline-block mt-1.5 text-xs sm:text-sm text-purple-600 dark:text-purple-400 hover:underline font-medium"
           >
-            Continue reading →
+            Read more →
           </Link>
         </div>
       </div>
