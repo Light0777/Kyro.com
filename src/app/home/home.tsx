@@ -6,8 +6,8 @@ const Home = () => {
     const images = [
         "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/a2233388-b592-4bd2-a13f-f48efe2246da.png/public",
         "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/bb12ec3b-4417-4df7-85e1-65aafa92d104.png/public",
-        "https://i.pinimg.com/1200x/65/00/85/650085494b582131eccd84a51383df4f.jpg",
-        "https://i.pinimg.com/736x/81/c2/d5/81c2d5db59757d2ab8f1730dc26a0165.jpg",
+        "https://images.unsplash.com/photo-1776877580669-752fa1048fee?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D",
+        "https://images.unsplash.com/photo-1776876384831-8da872957396?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8Mnx8fGVufDB8fHx8fA%3D%3D",
         "https://i.pinimg.com/1200x/cb/e3/d8/cbe3d895c41fd3023fbba1fb0579aae4.jpg",
         "https://i.pinimg.com/736x/d8/e0/c3/d8e0c38048ad9f02dc71f13363bbcfb5.jpg",
         "https://i.pinimg.com/736x/29/36/8d/29368d35c883756395d676e4d79e62ea.jpg",
@@ -17,8 +17,8 @@ const Home = () => {
     const trendingTitles = [
         { title: "Decorative Pillows: 2026's Hottest Home Decor Trend (+ DIY Ideas)", slug: "decorative-pillows-trend-2026-diy" },
         { title: "Best GTA 6 Setup Under ₹24.8K", slug: "best-gta-6-setup-under-24800" },
-        { title: "Understanding AI in 2024", slug: "understanding-ai-2024" },
-        { title: "Creative Writing Techniques", slug: "creative-writing-techniques" },
+        { title: "GTA 6 Smart Creator Setup Under ₹45K", slug: "gta-6-smart-creator-setup-under-45000" },
+        { title: "GTA 6 Best Value Setup Under ₹60k - Future Proofing", slug: "gta-6-best-value-setup-60000" },
         { title: "Digital Marketing Trends", slug: "digital-marketing-trends" },
         { title: "The Art of Minimalism", slug: "art-of-minimalism" },
         { title: "Sustainable Living Guide", slug: "sustainable-living-guide" },
