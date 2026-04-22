@@ -10,7 +10,7 @@ const Page = async (
 ) => {
   const searchParams = await props.searchParams;
   return (
-    <div className="w-full mx-auto mb-10">
+    <div className="w-full mx-auto mb-10 overflow-hidden">
       <Navbar />
       
       {/* Main Homepage Content */}
