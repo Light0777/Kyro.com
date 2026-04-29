@@ -16,7 +16,7 @@ const Page = () => {
             Stories, Ideas &amp; Curiosity
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            We believe that everyone has a story worth sharing. Kyro is where thoughts turn into stories and ideas find a voice.
+            We believe that everyone has a story worth sharing. iknowtechworld is where thoughts turn into stories and ideas find a voice.
           </p>
         </div>
 
