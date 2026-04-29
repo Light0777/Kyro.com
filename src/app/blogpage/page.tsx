@@ -18,6 +18,16 @@ const Page = async (
   const page = searchParams.page ? parseInt(searchParams.page as string) : 1;
   const result = await wisp.getPosts({ limit: 6, page });
 
+  // Transform pagination to match the component's expected format
+  // Use the actual property names from Wisp's PostPagination
+  const pagination = {
+    page: result.pagination.page,
+    limit: result.pagination.limit,
+    totalPages: result.pagination.totalPages, // Changed from pageCount to totalPages
+    nextPage: result.pagination.nextPage,
+    prevPage: result.pagination.prevPage,
+  };
+
   return (
     <div className="container mx-auto px-5 mb-10">
       <Navbar />
@@ -55,7 +65,12 @@ const Page = async (
         <AdUnit slot="YOUR_BLOGPAGE_AD_SLOT" format="horizontal" />
       </div>
 
-      <BlogPostsPagination pagination={result.pagination} />
+      {/* Pass the correct basePath */}
+      <BlogPostsPagination 
+        pagination={pagination} 
+        basePath="/blogpage?page=" 
+      />
+      
       <Footer />
     </div>
   );

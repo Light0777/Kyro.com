@@ -16,9 +16,9 @@ const Home = () => {
         "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/bb12ec3b-4417-4df7-85e1-65aafa92d104.png/public",
         "https://images.unsplash.com/photo-1776877580669-752fa1048fee?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D",
         "https://images.unsplash.com/photo-1776876384831-8da872957396?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8Mnx8fGVufDB8fHx8fA%3D%3D",
-        "https://i.pinimg.com/1200x/cb/e3/d8/cbe3d895c41fd3023fbba1fb0579aae4.jpg",
-        "https://i.pinimg.com/736x/d8/e0/c3/d8e0c38048ad9f02dc71f13363bbcfb5.jpg",
-        "https://i.pinimg.com/736x/29/36/8d/29368d35c883756395d676e4d79e62ea.jpg",
+        "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/bd9b274e-eb3c-4693-8612-e5b8704680b0.png/public",
+        "https://images.unsplash.com/photo-1669380624544-4767be2c5928?q=80&w=1128&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/030a5f84-d106-4990-b769-8d6dc7c3fb9a.png/public",
     ];
 
     const trendingTitles = [
@@ -26,9 +26,9 @@ const Home = () => {
         { title: "Best GTA 6 Setup Under ₹24.8K", slug: "best-gta-6-setup-under-24800" },
         { title: "GTA 6 Smart Creator Setup Under ₹45K", slug: "gta-6-smart-creator-setup-under-45000" },
         { title: "GTA 6 Best Value Setup Under ₹60k - Future Proofing", slug: "gta-6-best-value-setup-under-60000" },
-        { title: "Digital Marketing Trends", slug: "digital-marketing-trends" },
-        { title: "The Art of Minimalism", slug: "art-of-minimalism" },
-        { title: "Sustainable Living Guide", slug: "sustainable-living-guide" },
+        { title: "7 Best Educational Gadgets for Students", slug: "7-best-educational-gadgets-for-students" },
+        { title: "Best Gadgets for College Students in 2026", slug: "best-gadgets-for-college-students-in-2026" },
+        { title: "7 Insanely Useful Study Gadgets Under $20 Every Student Should Try", slug: "7-study-gadgets-under-20-students" },
     ];
 
     const getRandomStyle = (index: number) => {
