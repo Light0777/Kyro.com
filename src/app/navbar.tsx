@@ -125,7 +125,7 @@ export default function Navbar() {
             </div>
 
             {/* Spacer to prevent content from hiding under fixed navbar */}
-            <div className="h-5 sm:h-16"></div>
+            <div className="h-0 sm:h-8"></div>
         </>
     );
 }

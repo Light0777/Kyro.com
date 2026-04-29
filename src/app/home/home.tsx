@@ -1,247 +1,299 @@
-import React from 'react'
+// app/page.tsx  ─  Server Component (no "use client" needed)
+// Posts are fetched at request time and revalidated every 60 seconds.
+// Every time you publish a blog on wisp, the homepage will reflect it
+// within 1 minute — zero manual work required.
+
 import Image from 'next/image'
 import Link from 'next/link'
-import { IoFlameOutline, IoMedalOutline, IoStatsChart, IoThumbsUpOutline, IoWifiOutline } from 'react-icons/io5';
-import { IoGameControllerOutline } from 'react-icons/io5';
-import { IoChatbubblesOutline } from 'react-icons/io5';
-import { IoHardwareChipOutline } from 'react-icons/io5';
-import { IoBulbOutline } from 'react-icons/io5';
-import { IoTrendingUpOutline } from 'react-icons/io5';
-import { IoRocketOutline } from 'react-icons/io5';
-import { IoHappyOutline } from 'react-icons/io5';
+import {
+    IoGameControllerOutline,
+    IoChatbubblesOutline,
+    IoHardwareChipOutline,
+    IoBulbOutline,
+    IoArrowForward,
+    IoFlashOutline,
+    IoShieldCheckmarkOutline,
+    IoWalletOutline,
+    IoTimeOutline,
+    IoNewspaperOutline,
+} from 'react-icons/io5'
 
-const Home = () => {
-    const images = [
-        "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/a2233388-b592-4bd2-a13f-f48efe2246da.png/public",
-        "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/bb12ec3b-4417-4df7-85e1-65aafa92d104.png/public",
-        "https://images.unsplash.com/photo-1776877580669-752fa1048fee?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8MXx8fGVufDB8fHx8fA%3D%3D",
-        "https://images.unsplash.com/photo-1776876384831-8da872957396?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwcm9maWxlLXBhZ2V8Mnx8fGVufDB8fHx8fA%3D%3D",
-        "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/bd9b274e-eb3c-4693-8612-e5b8704680b0.png/public",
-        "https://images.unsplash.com/photo-1669380624544-4767be2c5928?q=80&w=1128&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        "https://imagedelivery.net/lLmNeOP7HXG0OqaG97wimw/a72ec7ae-e5ac-4d1b-ab78-44670d36e854/030a5f84-d106-4990-b769-8d6dc7c3fb9a.png/public",
-    ];
+// ─── Wisp types (subset we actually use) ─────────────────────────────────────
+interface WispPost {
+    id: string
+    title: string
+    description: string | null
+    slug: string
+    image: string | null
+    createdAt: string
+    tags: { id: string; name: string }[]
+}
 
-    const trendingTitles = [
-        { title: "Decorative Pillows: 2026's Hottest Home Decor Trend (+ DIY Ideas)", slug: "decorative-pillows-trend-2026-diy" },
-        { title: "Best GTA 6 Setup Under ₹24.8K", slug: "best-gta-6-setup-under-24800" },
-        { title: "GTA 6 Smart Creator Setup Under ₹45K", slug: "gta-6-smart-creator-setup-under-45000" },
-        { title: "GTA 6 Best Value Setup Under ₹60k - Future Proofing", slug: "gta-6-best-value-setup-under-60000" },
-        { title: "7 Best Educational Gadgets for Students", slug: "7-best-educational-gadgets-for-students" },
-        { title: "Best Gadgets for College Students in 2026", slug: "best-gadgets-for-college-students-in-2026" },
-        { title: "7 Insanely Useful Study Gadgets Under $20 Every Student Should Try", slug: "7-study-gadgets-under-20-students" },
-    ];
+interface WispResponse {
+    posts: WispPost[]
+}
 
-    const getRandomStyle = (index: number) => {
-        const rotations = [-12, -6, 3, 8, -4, 10, -9, 5, -2, 7, -7, 4];
-        const yOffsets = [-15, 8, -10, 12, -5, 15, -8, 6, -3, 10, -12, 5];
-        const xOffsets = [-8, 5, -3, 10, -6, 4, -10, 7, -2, 8, -5, 3];
+// ─── Fetch latest posts from wisp ─────────────────────────────────────────────
+// Uses Next.js ISR: page is cached and regenerated every 60 seconds.
+// Swap in `wisp` JS SDK if you prefer: const result = await wisp.getPosts({ limit: 4 })
+async function getLatestPosts(limit = 4): Promise<WispPost[]> {
+    const blogId = process.env.NEXT_PUBLIC_BLOG_ID
 
-        return {
-            rotate: rotations[index % rotations.length],
-            translateY: yOffsets[index % yOffsets.length],
-            translateX: xOffsets[index % xOffsets.length],
-        };
-    };
+    if (!blogId) {
+        console.warn('NEXT_PUBLIC_BLOG_ID is not set — returning empty posts')
+        return []
+    }
+
+    try {
+        const res = await fetch(
+            `https://www.wisp.blog/api/v1/${blogId}/posts?limit=${limit}`,
+            {
+                next: { revalidate: 60 }, // refresh every 60 seconds
+            }
+        )
+
+        if (!res.ok) {
+            console.error('wisp API error:', res.status, res.statusText)
+            return []
+        }
+
+        const data: WispResponse = await res.json()
+        return data.posts ?? []
+    } catch (err) {
+        console.error('Failed to fetch posts:', err)
+        return []
+    }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+// Map the first tag of a post to a colour class
+function tagColor(tag?: string) {
+    const map: Record<string, string> = {
+        gaming: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
+        students: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
+        ai: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
+        tech: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+    }
+    const key = (tag ?? '').toLowerCase()
+    return map[key] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+}
+
+function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    })
+}
+
+// ─── Skeleton for loading state (used by Suspense on blogpage) ────────────────
+export function PostCardSkeleton({ large = false }: { large?: boolean }) {
+    return (
+        <div className={`animate-pulse rounded-2xl bg-gray-100 dark:bg-gray-800 overflow-hidden ${large ? 'h-64 md:h-52' : 'h-64'}`} />
+    )
+}
+
+// ─── Post card ────────────────────────────────────────────────────────────────
+function PostCard({ post, large = false }: { post: WispPost; large?: boolean }) {
+    const tag = post.tags?.[0]?.name
+    const fallbackImage = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&auto=format&fit=crop&q=60'
 
     return (
-        <div className="min-h-screen transition-colors duration-300">
-            {/* Hero Section */}
-            <div className="text-center px-4 max-w-6xl mx-auto">
-                <span className="font-script text-2xl sm:text-3xl md:text-5xl block text-black dark:text-white">
-                    Welcome to <span>{process.env.NEXT_PUBLIC_BLOG_DISPLAY_NAME}</span>
+        <Link
+            href={`/blog/${post.slug}`}
+            className={`group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${large ? 'md:flex-row' : ''}`}
+            aria-label={`Read article: ${post.title}`}
+        >
+            {/* Thumbnail */}
+            <div className={`relative overflow-hidden flex-shrink-0 ${large ? 'h-52 md:h-auto md:w-72' : 'h-44'}`}>
+                <Image
+                    src={post.image ?? fallbackImage}
+                    alt={post.title}
+                    fill
+                    sizes={large ? '(max-width: 768px) 100vw, 288px' : '400px'}
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+            </div>
+
+            {/* Content */}
+            <div className="flex flex-col gap-2 p-5 flex-1">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                    {tag && (
+                        <span className={`inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full ${tagColor(tag)}`}>
+                            {tag}
+                        </span>
+                    )}
+                    <span className="inline-flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 ml-auto">
+                        <IoTimeOutline size={12} />
+                        {formatDate(post.createdAt)}
+                    </span>
+                </div>
+
+                <h2 className={`font-bold text-gray-900 dark:text-white leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors ${large ? 'text-xl md:text-2xl' : 'text-base'}`}>
+                    {post.title}
+                </h2>
+
+                {post.description && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-2 flex-1">
+                        {post.description}
+                    </p>
+                )}
+
+                <span className="inline-flex items-center gap-1 text-sm font-semibold text-purple-600 dark:text-purple-400 mt-1">
+                    Read article
+                    <IoArrowForward size={14} className="transition-transform group-hover:translate-x-1" />
                 </span>
-                <h1 className="text-3xl md:text-7xl font-bold mt-4 text-black dark:text-white">
-                    Stories, Ideas & Curiosity in One Place
-                </h1>
             </div>
+        </Link>
+    )
+}
 
-            {/* Scattered photo wall */}
-            <div className="flex justify-center items-center py-[2rem] w-full min-h-[500px]">
-                <div className="relative flex flex-wrap justify-center items-center gap-2 md:gap-4 px-8">
-                    {images.map((image, index) => {
-                        const style = getRandomStyle(index);
-                        const baseZIndex = 10 + (index * 2);
-                        const postData = trendingTitles[index % trendingTitles.length];
-
-                        return (
-                            <Link
-                                key={index}
-                                href={`/blog/${postData.slug}`}
-                                className="relative transition-all duration-300 hover:scale-110 group cursor-pointer"
-                                style={{
-                                    transform: `rotate(${style.rotate}deg) translateX(${style.translateX}px) translateY(${style.translateY}px)`,
-                                    zIndex: baseZIndex,
-                                    margin: index !== 0 ? '-12px' : '0',
-                                    display: 'block',
-                                }}
-                            >
-                                <div className="relative 
-                                    w-28 h-28
-                                    sm:w-32 sm:h-32
-                                    md:w-40 md:h-40
-                                    lg:w-52 lg:h-52
-                                    xl:w-[15rem] xl:h-[15rem]
-                                ">
-                                    <Image
-                                        src={image}
-                                        alt={`Photo ${index + 1}`}
-                                        fill
-                                        sizes="(max-width: 640px) 7rem, (max-width: 768px) 8rem, (max-width: 1024px) 10rem, (max-width: 1280px) 13rem, 15rem"
-                                        className="object-cover rounded-xl border-4 border-white shadow-lg transition-all duration-300 hover:-translate-y-4"
-                                        style={{
-                                            boxShadow: '0 20px 30px -12px rgba(0, 0, 0, 0.25)',
-                                            border: '2px solid white',
-                                        }}
-                                    />
-                                </div>
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-8 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[9999] pointer-events-none">
-                                    <div className="absolute top-full left-1/4 -translate-x-1/2 -mt-[7px]">
-                                        <div className="w-3 h-3 bg-black dark:bg-white rotate-45 origin-center"></div>
-                                    </div>
-                                    <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-2 rounded-full whitespace-nowrap shadow-lg border border-gray-200 dark:border-gray-800">
-                                        <p className="text-sm font-medium">
-                                            {postData.title}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="absolute inset-0 rounded-xl pointer-events-none"
-                                    style={{
-                                        boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
-                                    }}
-                                />
-                            </Link>
-                        );
-                    })}
-                </div>
-            </div>
-
-            {/* Welcome Section */}
-            <div className="max-w-4xl mx-auto px-4 py-12">
-                <div className="text-center mb-10">
-                    <h2 className="text-3xl md:text-4xl font-bold text-black dark:text-white mb-4">
-                        Welcome to I Know Tech World
-                    </h2>
-                    <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                        At I Know Tech World, we simplify technology for everyday users, students, gamers, and creators.
-                    </p>
-                    <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mt-4">
-                        Whether you're building a budget gaming PC, choosing the right gadget, exploring AI tools, or staying updated with digital trends we create content that saves time, money, and confusion.
-                    </p>
-                </div>
-
-                {/* What You'll Find Here */}
-                <div className="mb-12">
-                    <h2 className="text-2xl md:text-3xl font-bold text-center text-black dark:text-white mb-8">
-                        What You'll Find Here
-                    </h2>
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5">
-                            <div className="text-2xl mb-3 flex gap-2">
-                                <IoFlameOutline size={40} color="#a855f7" />
-                            </div>
-                            <h3 className="text-lg font-bold text-black dark:text-white mb-1">Honest Buying Guides</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">Best value gadgets, smart purchases, budget recommendations.</p>
-                        </div>
-
-                        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5">
-                            <div className="text-2xl mb-3">
-                                <IoGameControllerOutline size={40} color="#a855f7" />
-                            </div>
-                            <h3 className="text-lg font-bold text-black dark:text-white mb-1">Gaming & PC Builds</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">Affordable gaming setups, GTA 6-ready PCs, performance guides.</p>
-                        </div>
-
-                        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5">
-                            <div className="text-2xl mb-3">
-                                <IoChatbubblesOutline size={40} color="#a855f7" />
-                            </div>
-                            <h3 className="text-lg font-bold text-black dark:text-white mb-1">AI & Productivity Tools</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">Useful tools that help creators, students, and businesses grow faster.</p>
-                        </div>
-
-                        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5">
-                            <div className="text-2xl mb-3">
-                                <IoHardwareChipOutline size={40} color="#a855f7" />
-                            </div>
-                            <h3 className="text-lg font-bold text-black dark:text-white mb-1">Tech News & Trends</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">Latest updates in consumer tech, apps, gadgets, and internet culture.</p>
-                        </div>
-
-                        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5">
-                            <div className="text-2xl mb-3">
-                                <IoBulbOutline size={40} color="#a855f7" />
-                            </div>
-                            <h3 className="text-lg font-bold text-black dark:text-white mb-1">Beginner Friendly Explanations</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">No jargon. No confusion. Just clear useful advice.</p>
-                        </div>
-
-                        <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-5">
-                            <div className="text-2xl mb-3">
-                                <IoHappyOutline size={40} color="#a855f7" />
-                            </div>
-                            <h3 className="text-lg font-bold text-black dark:text-white mb-1">Budget-Friendly Focus</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">Quality recommendations that don't break the bank.</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Why Readers Choose Us */}
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-2xl p-8 mb-12">
-                    <h2 className="text-2xl md:text-3xl font-bold text-center text-black dark:text-white mb-6">
-                        Why Readers Choose Us
-                    </h2>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 text-center">
-                        <div className="p-3">
-                            <div className="text-green-500 text-xl mb-1">✓</div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300">Straightforward advice</p>
-                        </div>
-                        <div className="p-3">
-                            <div className="text-green-500 text-xl mb-1">✓</div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300">Budget-friendly recommendations</p>
-                        </div>
-                        <div className="p-3">
-                            <div className="text-green-500 text-xl mb-1">✓</div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300">Real-world useful content</p>
-                        </div>
-                        <div className="p-3">
-                            <div className="text-green-500 text-xl mb-1">✓</div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300">Easy to understand guides</p>
-                        </div>
-                        <div className="p-3">
-                            <div className="text-green-500 text-xl mb-1">✓</div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300">Regularly updated articles</p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Stay Ahead Section */}
-                <div className="text-center mb-12">
-                    <h2 className="text-2xl md:text-3xl font-bold text-black dark:text-white mb-4">
-                        Stay Ahead in Tech
-                    </h2>
-                    <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                        Technology moves fast. We help you stay informed with fresh content, new guides, smarter recommendations, and trends worth knowing.
-                    </p>
-                </div>
-
-                {/* CTA Footer Section */}
-                <div className="text-center bg-black dark:bg-white rounded-2xl p-10">
-                    <h2 className="text-2xl md:text-3xl font-bold text-white dark:text-black mb-4">
-                        Ready to Explore?
-                    </h2>
-                    <p className="text-gray-300 dark:text-gray-600 mb-6">
-                        Browse our latest articles and discover smarter ways to buy, build, and use technology.
-                    </p>
-                    <Link
-                        href="/blogpage"
-                        className="inline-block px-8 py-3 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition font-medium"
-                    >
-                        Read Latest Posts →
-                    </Link>
-                </div>
-            </div>
+// ─── Empty state ──────────────────────────────────────────────────────────────
+function EmptyState() {
+    return (
+        <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
+            <IoNewspaperOutline size={48} className="text-gray-300 dark:text-gray-700 mb-4" />
+            <p className="text-gray-500 dark:text-gray-400 font-medium">No posts yet — check back soon!</p>
         </div>
     )
 }
 
-export default Home
+// ─── Category pills ───────────────────────────────────────────────────────────
+const CATEGORIES = [
+    { label: 'Gaming Builds', icon: <IoGameControllerOutline size={18} />, slug: 'gaming' },
+    { label: 'Student Gadgets', icon: <IoBulbOutline size={18} />, slug: 'students' },
+    { label: 'AI & Tools', icon: <IoChatbubblesOutline size={18} />, slug: 'ai' },
+    { label: 'Tech Guides', icon: <IoHardwareChipOutline size={18} />, slug: 'tech' },
+]
+
+// ─── Page (async Server Component) ───────────────────────────────────────────
+export default async function Home() {
+    const posts = await getLatestPosts(4)
+    const [featured, ...rest] = posts
+
+    return (
+        <div className="min-h-screen bg-white dark:bg-[#09090b] transition-colors duration-300">
+
+            {/* ── HERO ─────────────────────────────────────────────────────── */}
+            <section className="max-w-5xl mx-auto px-4 pt-14 pb-10 text-center">
+
+                {/* Trust bar */}
+                <div className="inline-flex flex-wrap justify-center gap-x-6 gap-y-2 mb-6">
+                    {[
+                        { icon: <IoWalletOutline size={16} />, text: 'Budget-first picks' },
+                        { icon: <IoShieldCheckmarkOutline size={16} />, text: 'No paid promotions' },
+                        { icon: <IoFlashOutline size={16} />, text: 'Updated regularly' },
+                    ].map(({ icon, text }) => (
+                        <span key={text} className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="text-purple-500">{icon}</span>
+                            {text}
+                        </span>
+                    ))}
+                </div>
+
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
+                    Budget Tech Guides<br />
+                    <span className="text-purple-600 dark:text-purple-400">for Gamers & Students</span>
+                </h1>
+
+                <p className="mt-4 text-lg text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+                    Honest buying guides, gaming PC builds, and gadget picks, all under a real budget.
+                </p>
+
+                {/* Category quick-nav */}
+                <nav aria-label="Browse by category" className="mt-8 flex flex-wrap justify-center gap-3">
+                    {CATEGORIES.map(({ label, icon, slug }) => (
+                        <Link
+                            key={slug}
+                            href={`/blogpage?tag=${slug}`}
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-purple-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                        >
+                            <span className="text-purple-500">{icon}</span>
+                            {label}
+                        </Link>
+                    ))}
+                </nav>
+            </section>
+
+            {/* ── POSTS GRID ───────────────────────────────────────────────── */}
+            <main className="max-w-5xl mx-auto px-4 pb-20">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                        Latest Articles
+                    </h2>
+                    <Link
+                        href="/blogpage"
+                        className="text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1"
+                    >
+                        View all <IoArrowForward size={14} />
+                    </Link>
+                </div>
+
+                {posts.length === 0 ? (
+                    <EmptyState />
+                ) : (
+                    <>
+                        {/* Featured post — full-width horizontal card */}
+                        {featured && (
+                            <div className="mb-5">
+                                <PostCard post={featured} large />
+                            </div>
+                        )}
+
+                        {/* Remaining posts — responsive grid */}
+                        {rest.length > 0 && (
+                            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                                {rest.map((post) => (
+                                    <PostCard key={post.id} post={post} />
+                                ))}
+                            </div>
+                        )}
+                    </>
+                )}
+
+                {/* Browse-all CTA */}
+                <div className="mt-10 text-center">
+                    <Link
+                        href="/blogpage"
+                        className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-purple-300 dark:hover:shadow-purple-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+                    >
+                        Browse all articles <IoArrowForward size={16} />
+                    </Link>
+                </div>
+            </main>
+
+            {/* ── WHY US ───────────────────────────────────────────────────── */}
+            <section className="border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-[#09090b]">
+                <div className="max-w-5xl mx-auto px-4 py-14 grid sm:grid-cols-3 gap-8 text-center">
+                    {[
+                        {
+                            icon: <IoWalletOutline size={28} />,
+                            title: 'Real budgets',
+                            body: 'Every guide is built around prices people actually spend — not aspirational numbers.',
+                        },
+                        {
+                            icon: <IoShieldCheckmarkOutline size={28} />,
+                            title: 'No sponsored bias',
+                            body: "We don't take money to recommend products. If it's here, we genuinely think it's worth it.",
+                        },
+                        {
+                            icon: <IoFlashOutline size={28} />,
+                            title: 'Always current',
+                            body: 'Prices and specs change fast. We keep guides updated so you\'re never buying yesterday\'s deal.',
+                        },
+                    ].map(({ icon, title, body }) => (
+                        <div key={title} className="flex flex-col items-center gap-3">
+                            <span className="p-3 rounded-2xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
+                                {icon}
+                            </span>
+                            <h3 className="font-bold text-gray-900 dark:text-white">{title}</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{body}</p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        </div>
+    )
+}
