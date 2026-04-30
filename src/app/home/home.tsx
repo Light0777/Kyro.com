@@ -68,15 +68,16 @@ async function getLatestPosts(limit = 4): Promise<WispPost[]> {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 // Map the first tag of a post to a colour class
+// Palette is derived from the iknowtechworld logo (blue/teal/indigo family)
 function tagColor(tag?: string) {
     const map: Record<string, string> = {
-        gaming: 'bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300',
-        students: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300',
-        ai: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300',
-        tech: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300',
+        gaming: 'bg-amber-100  text-amber-800  dark:bg-amber-900/40  dark:text-amber-300',
+        students: 'bg-blue-100   text-blue-800   dark:bg-blue-900/40   dark:text-blue-300',
+        ai: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300',
+        tech: 'bg-teal-100   text-teal-800   dark:bg-teal-900/40   dark:text-teal-300',
     }
     const key = (tag ?? '').toLowerCase()
-    return map[key] ?? 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'
+    return map[key] ?? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
 }
 
 function formatDate(iso: string) {
@@ -102,7 +103,7 @@ function PostCard({ post, large = false }: { post: WispPost; large?: boolean }) 
     return (
         <Link
             href={`/blog/${post.slug}`}
-            className={`group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 ${large ? 'md:flex-row' : ''}`}
+            className={`group relative flex flex-col overflow-hidden rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${large ? 'md:flex-row' : ''}`}
             aria-label={`Read article: ${post.title}`}
         >
             {/* Thumbnail */}
@@ -131,7 +132,7 @@ function PostCard({ post, large = false }: { post: WispPost; large?: boolean }) 
                     </span>
                 </div>
 
-                <h2 className={`font-bold text-gray-900 dark:text-white leading-snug group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors ${large ? 'text-xl md:text-2xl' : 'text-base'}`}>
+                <h2 className={`font-bold text-gray-900 dark:text-white leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors ${large ? 'text-xl md:text-2xl' : 'text-base'}`}>
                     {post.title}
                 </h2>
 
@@ -141,7 +142,7 @@ function PostCard({ post, large = false }: { post: WispPost; large?: boolean }) 
                     </p>
                 )}
 
-                <span className="inline-flex items-center gap-1 text-sm font-semibold text-purple-600 dark:text-purple-400 mt-1">
+                <span className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
                     Read article
                     <IoArrowForward size={14} className="transition-transform group-hover:translate-x-1" />
                 </span>
@@ -187,7 +188,7 @@ export default async function Home() {
                         { icon: <IoFlashOutline size={16} />, text: 'Updated regularly' },
                     ].map(({ icon, text }) => (
                         <span key={text} className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                            <span className="text-purple-500">{icon}</span>
+                            <span className="text-blue-600">{icon}</span>
                             {text}
                         </span>
                     ))}
@@ -195,11 +196,11 @@ export default async function Home() {
 
                 <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
                     Budget Tech Guides<br />
-                    <span className="text-purple-600 dark:text-purple-400">for Gamers & Students</span>
+                    <span className="text-blue-600 dark:text-blue-400">for Gamers & Students</span>
                 </h1>
 
                 <p className="mt-4 text-lg text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
-                    Honest buying guides, gaming PC builds, and gadget picks, all under a real budget.
+                    Honest buying guides, gaming PC builds, and gadget picks — all under a real budget.
                 </p>
 
                 {/* Category quick-nav */}
@@ -208,9 +209,9 @@ export default async function Home() {
                         <Link
                             key={slug}
                             href={`/blogpage?tag=${slug}`}
-                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-purple-400 hover:text-purple-600 dark:hover:text-purple-400 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 text-sm font-medium text-gray-700 dark:text-gray-300 hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                         >
-                            <span className="text-purple-500">{icon}</span>
+                            <span className="text-blue-600 dark:text-blue-400">{icon}</span>
                             {label}
                         </Link>
                     ))}
@@ -225,7 +226,7 @@ export default async function Home() {
                     </h2>
                     <Link
                         href="/blogpage"
-                        className="text-sm font-semibold text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1"
+                        className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
                     >
                         View all <IoArrowForward size={14} />
                     </Link>
@@ -257,7 +258,7 @@ export default async function Home() {
                 <div className="mt-10 text-center">
                     <Link
                         href="/blogpage"
-                        className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-purple-300 dark:hover:shadow-purple-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+                        className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-blue-300 dark:hover:shadow-blue-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                     >
                         Browse all articles <IoArrowForward size={16} />
                     </Link>
@@ -285,7 +286,7 @@ export default async function Home() {
                         },
                     ].map(({ icon, title, body }) => (
                         <div key={title} className="flex flex-col items-center gap-3">
-                            <span className="p-3 rounded-2xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
+                            <span className="p-3 rounded-2xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400">
                                 {icon}
                             </span>
                             <h3 className="font-bold text-gray-900 dark:text-white">{title}</h3>
